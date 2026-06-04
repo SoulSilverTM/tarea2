@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artefactos en Tomografía Computarizada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef1f4;
+    --bg-grid: rgba(20, 90, 130, 0.04);
+    --surface: #ffffff;
+    --surface-2: #f6f8fa;
+    --ink: #16242e;
+    --ink-soft: #4a5d68;
+    --ink-faint: #7d8e98;
+    --line: #dde4e9;
+    --accent: #0d8ca8;
+    --accent-deep: #075f74;
+    --accent-soft: rgba(13, 140, 168, 0.10);
+    --warn: #c2611d;
+    --warn-soft: rgba(194, 97, 29, 0.10);
+    --good: #2c8a5a;
+    --good-soft: rgba(44, 138, 90, 0.10);
+    --shadow: 0 1px 3px rgba(16, 36, 46, 0.06), 0 8px 30px rgba(16, 36, 46, 0.07);
+    --shadow-lg: 0 4px 12px rgba(16, 36, 46, 0.10), 0 20px 60px rgba(16, 36, 46, 0.12);
+  }
+  html[data-theme="dark"] {
+    --bg: #0c1418;
+    --bg-grid: rgba(120, 200, 230, 0.035);
+    --surface: #131f25;
+    --surface-2: #18272e;
+    --ink: #e7eef1;
+    --ink-soft: #a7b8c0;
+    --ink-faint: #6c7e87;
+    --line: #243640;
+    --accent: #34b6d4;
+    --accent-deep: #5fcde6;
+    --accent-soft: rgba(52, 182, 212, 0.13);
+    --warn: #e89348;
+    --warn-soft: rgba(232, 147, 72, 0.13);
+    --good: #50c186;
+    --good-soft: rgba(80, 193, 134, 0.13);
+    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.35);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.45), 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Spline Sans', sans-serif;
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    line-height: 1.6;
+    transition: background-color .4s ease, color .4s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- HEADER ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    max-width: 1080px; margin: 0 auto;
+    padding: 14px 22px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .logo {
+    width: 38px; height: 38px; flex-shrink: 0;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    display: grid; place-items: center;
+    box-shadow: 0 4px 14px var(--accent-soft);
+  }
+  .logo svg { width: 22px; height: 22px; stroke: #fff; }
+  .brand h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.12rem; font-weight: 600; letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .brand span { font-size: .74rem; color: var(--ink-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .toggle {
+    margin-left: auto;
+    width: 56px; height: 30px; border-radius: 30px;
+    border: 1px solid var(--line); background: var(--surface-2);
+    position: relative; cursor: pointer; flex-shrink: 0;
+    transition: background .3s;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    transition: transform .35s cubic-bezier(.5,1.6,.4,1);
+  }
+  html[data-theme="dark"] .toggle::after { transform: translateX(26px); }
+  .toggle svg { position: absolute; top: 7px; width: 16px; height: 16px; stroke: var(--ink-faint); }
+  .toggle .sun { left: 7px; opacity: 0; }
+  .toggle .moon { right: 7px; opacity: 1; }
+  html[data-theme="dark"] .toggle .sun { opacity: 1; }
+  html[data-theme="dark"] .toggle .moon { opacity: 0; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    max-width: 1080px; margin: 0 auto;
+    padding: 56px 22px 30px;
+    text-align: center;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+    padding: 5px 14px; border: 1px solid var(--accent-soft);
+    background: var(--accent-soft); border-radius: 30px;
+    margin-bottom: 20px;
+  }
+  .hero h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 6vw, 3.3rem);
+    font-weight: 600; letter-spacing: -0.025em; line-height: 1.05;
+  }
+  .hero h2 em { font-style: italic; color: var(--accent); }
+  .hero p {
+    max-width: 560px; margin: 18px auto 0;
+    color: var(--ink-soft); font-size: 1.02rem;
+  }
+
+  /* ---------- NAV TABS ---------- */
+  nav.tabs {
+    max-width: 1080px; margin: 0 auto;
+    padding: 22px 22px 4px;
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .tab {
+    font-family: 'Spline Sans', sans-serif;
+    font-size: .9rem; font-weight: 600;
+    padding: 11px 20px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--ink-soft); cursor: pointer;
+    transition: all .25s; display: flex; align-items: center; gap: 9px;
+  }
+  .tab .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .tab[data-cat="fisica"] .dot { background: var(--accent); }
+  .tab[data-cat="movimiento"] .dot { background: var(--warn); }
+  .tab[data-cat="tecnica"] .dot { background: var(--good); }
+  .tab:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .tab.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  html[data-theme="dark"] .tab.active { background: var(--accent); border-color: var(--accent); color: #07171c; }
+
+  /* ---------- MAIN ---------- */
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 22px 80px; }
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    margin: 38px 0 8px;
+  }
+  .section-head .pill {
+    font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 8px;
+  }
+  .pill.fisica { background: var(--accent-soft); color: var(--accent-deep); }
+  .pill.movimiento { background: var(--warn-soft); color: var(--warn); }
+  .pill.tecnica { background: var(--good-soft); color: var(--good); }
+  html[data-theme="dark"] .pill.fisica { color: var(--accent-deep); }
+  .section-head h3 {
+    font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em;
+  }
+
+  /* ---------- CARDS ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    margin-top: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: box-shadow .3s, transform .3s, border-color .3s;
+  }
+  .card.open { box-shadow: var(--shadow-lg); }
+  .card-head {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 22px; cursor: pointer;
+    user-select: none;
+  }
+  .badge {
+    font-family: 'Fraunces', serif;
+    width: 42px; height: 42px; flex-shrink: 0;
+    border-radius: 12px; display: grid; place-items: center;
+    font-size: 1.2rem; font-weight: 600; color: #fff;
+  }
+  .card[data-cat="fisica"] .badge { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); }
+  .card[data-cat="movimiento"] .badge { background: linear-gradient(135deg, var(--warn), #9c4810); }
+  .card[data-cat="tecnica"] .badge { background: linear-gradient(135deg, var(--good), #1c6840); }
+  .card-title { flex: 1; }
+  .card-title h4 { font-size: 1.12rem; font-weight: 600; letter-spacing: -0.01em; }
+  .card-title .sub { font-size: .82rem; color: var(--ink-faint); font-style: italic; }
+  .chev {
+    width: 22px; height: 22px; flex-shrink: 0; stroke: var(--ink-faint);
+    transition: transform .35s cubic-bezier(.5,1.4,.4,1);
+  }
+  .card.open .chev { transform: rotate(180deg); }
+
+  .card-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height .45s cubic-bezier(.4,0,.2,1);
+  }
+  .card-body-inner { padding: 0 22px 22px; }
+  .block {
+    border-left: 3px solid var(--line);
+    padding: 4px 0 4px 18px; margin-top: 18px;
+  }
+  .block:first-child { margin-top: 4px; }
+  .block.que { border-color: var(--accent); }
+  .block.por { border-color: var(--warn); }
+  .block.como { border-color: var(--good); }
+  .block .label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .block.que .label { color: var(--accent-deep); }
+  .block.por .label { color: var(--warn); }
+  .block.como .label { color: var(--good); }
+  html[data-theme="dark"] .block.que .label { color: var(--accent-deep); }
+  .block .label svg { width: 15px; height: 15px; }
+  .block p { color: var(--ink-soft); font-size: .96rem; }
+  .block strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- CONTROLS ---------- */
+  .controls {
+    display: flex; justify-content: center; gap: 12px; margin: 8px 0 4px; flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    font-family: 'Spline Sans'; font-size: .82rem; font-weight: 600;
+    color: var(--ink-soft); background: none; border: none; cursor: pointer;
+    padding: 6px 12px; border-radius: 8px; transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ctrl-btn:hover { background: var(--surface); color: var(--accent); }
+  .ctrl-btn svg { width: 15px; height: 15px; }
+
+  footer {
+    text-align: center; padding: 36px 22px 50px;
+    color: var(--ink-faint); font-size: .82rem;
+    border-top: 1px solid var(--line); max-width: 1080px; margin: 0 auto;
+  }
+  footer .dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+  footer .dots span { width: 8px; height: 8px; border-radius: 50%; }
+
+  .fade-cat { transition: opacity .3s, transform .3s; }
+  .hidden-cat { display: none; }
+
+  @media (max-width: 560px) {
+    .hero { padding-top: 40px; }
+    .card-head { padding: 16px; gap: 12px; }
+    .badge { width: 36px; height: 36px; font-size: 1rem; }
+    .brand span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/>
+        <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <h1>Artefactos en TC</h1>
+      <span>Guía de estudio</span>
+    </div>
+    <button class="toggle" id="themeToggle" aria-label="Cambiar tema">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="kicker">Tomografía Computarizada</span>
+  <h2>Artefactos de imagen<br><em>en TC</em></h2>
+  <p>Cada artefacto explicado en tres claves: qué es, por qué se produce y cómo corregirlo. Toca cada tarjeta para desplegar.</p>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-cat="all">Todos</button>
+  <button class="tab" data-cat="fisica"><span class="dot"></span>Razones físicas</button>
+  <button class="tab" data-cat="movimiento"><span class="dot"></span>Movimiento</button>
+  <button class="tab" data-cat="tecnica"><span class="dot"></span>Razones técnicas</button>
+</nav>
+
+<main id="content"></main>
+
+<footer>
+  <div class="dots">
+    <span style="background:var(--accent)"></span>
+    <span style="background:var(--warn)"></span>
+    <span style="background:var(--good)"></span>
+  </div>
+  Guía interactiva de artefactos en TC · Material de estudio
+</footer>
+
+<script>
+const data = [
+  { cat:"fisica", catName:"Razones físicas", badge:"a", title:"Endurecimiento del haz", sub:"Beam hardening",
+    que:"Aparición de <strong>bandas o líneas oscuras</strong> entre estructuras densas y un oscurecimiento del centro de objetos homogéneos (efecto copa o <em>cupping</em>).",
+    por:"El haz de rayos X es <strong>policromático</strong> (fotones de distintas energías). Al atravesar el tejido, los fotones de baja energía se absorben primero, así que el haz que sale tiene mayor energía media: se \"endurece\". El sistema asume erróneamente un haz monocromático y los valores de atenuación se falsean.",
+    como:"<strong>Filtración del haz</strong> (filtros de Al/Cu y filtros bow-tie que eliminan fotones blandos), <strong>algoritmos de corrección por software</strong> y calibración del equipo." },
+
+  { cat:"fisica", catName:"Razones físicas", badge:"b", title:"Volumen parcial", sub:"Promediado de vóxel",
+    que:"<strong>Bordes borrosos</strong> y valores CT intermedios poco fieles cuando estructuras pequeñas o límites entre tejidos no se representan con precisión.",
+    por:"Un vóxel contiene <strong>más de un tipo de tejido</strong> (p. ej. hueso y tejido blando). El sistema asigna un único número CT que es el <strong>promedio</strong> de las densidades del vóxel, perdiendo fidelidad. Empeora con cortes gruesos.",
+    como:"Usar <strong>cortes más finos</strong> y vóxeles más pequeños; reconstrucción con matrices mayores." },
+
+  { cat:"fisica", catName:"Razones físicas", badge:"c", title:"Inhomogeneidad en el eje Z", sub:"Eje longitudinal",
+    que:"<strong>Variaciones de intensidad o resolución</strong> a lo largo del eje longitudinal (dirección en que avanza la mesa).",
+    por:"El <strong>perfil del haz no es uniforme</strong> a lo largo del eje Z, junto con el espaciado/solapamiento entre cortes y la geometría del haz cónico en TC helicoidal/multicorte.",
+    como:"Optimizar el <strong>pitch</strong> (avance de mesa / colimación), colimación adecuada, algoritmos de interpolación y corrección del perfil del haz." },
+
+  { cat:"movimiento", catName:"Movimiento", badge:"a", title:"Movimiento del paciente", sub:"Inconsistencia de proyecciones",
+    que:"Imágenes <strong>borrosas</strong>, dobles contornos o bandas (<em>streaks</em>) que degradan la imagen.",
+    por:"El paciente se mueve durante la adquisición: <strong>respiración, latido, deglución, peristaltismo</strong> o movimientos voluntarios. Los datos de proyección dejan de ser consistentes entre sí.",
+    como:"Reducir el <strong>tiempo de adquisición</strong> (rotación rápida), apnea, inmovilización, sedación si procede, <strong>gating</strong> cardíaco/respiratorio y algoritmos de corrección de movimiento." },
+
+  { cat:"movimiento", catName:"Movimiento", badge:"b", title:"Movimiento del sistema", sub:"Origen mecánico",
+    que:"Distorsiones o falta de nitidez <strong>no atribuibles al paciente</strong>.",
+    por:"<strong>Vibraciones mecánicas o fallos</strong> en el gantry, tubo o detectores durante la rotación, que descuadran la geometría de adquisición.",
+    como:"<strong>Mantenimiento preventivo</strong> del equipo, control de vibraciones y calibración mecánica periódica." },
+
+  { cat:"tecnica", catName:"Razones técnicas", badge:"a", title:"Linealidad", sub:"Escala Hounsfield",
+    que:"<strong>Error sistemático</strong> en los números CT: la relación entre la atenuación real del tejido y el valor registrado no es la correcta.",
+    por:"Desviaciones en la respuesta de los detectores o <strong>pérdida de calibración</strong>, de modo que la conversión atenuación → número CT (escala Hounsfield) se desajusta.",
+    como:"<strong>Calibración periódica</strong>, incluyendo la <strong>calibración con agua</strong> (debe dar 0 UH) y verificación con fantomas/maniquíes." },
+
+  { cat:"tecnica", catName:"Razones técnicas", badge:"b", title:"Estabilidad", sub:"Deriva temporal",
+    que:"Variaciones en el rendimiento del sistema <strong>a lo largo del tiempo</strong> que afectan la consistencia de las imágenes.",
+    por:"Cambios en el rendimiento del <strong>tubo de rayos X o de los detectores</strong> por temperatura, envejecimiento o deriva de la electrónica.",
+    como:"<strong>Calentamiento del tubo</strong> antes del uso, control de calidad rutinario, climatización de la sala y recalibraciones programadas." },
+
+  { cat:"tecnica", catName:"Razones técnicas", badge:"c", title:"Aliasing", sub:"Submuestreo / Nyquist",
+    que:"Patrón de <strong>líneas finas que irradian</strong> desde bordes filosos o estructuras de alto contraste (artefacto stellate).",
+    por:"<strong>Submuestreo</strong>: no se toman suficientes proyecciones o muestras angulares para reconstruir fielmente la estructura, violando el <strong>criterio de Nyquist</strong>.",
+    como:"<strong>Aumentar el número de proyecciones</strong> (más vistas por rotación), reducir el pitch y aplicar filtros de suavizado en la reconstrucción." },
+];
+
+const icons = {
+  que:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 115 0c0 1.7-2.5 2-2.5 3.5"/><path d="M12 17h.01"/></svg>',
+  por:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.8.8 1 1.3 1 2.5h6c0-1.2.2-1.7 1-2.5A6 6 0 0012 3z"/></svg>',
+  como:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 00-5.4 5.4l-6 6 2 2 6-6a4 4 0 005.4-5.4l-2.5 2.5-2-2 2.5-2.5z"/></svg>'
+};
+
+const content = document.getElementById('content');
+let currentCat = 'all';
+
+function render() {
+  const groups = {};
+  data.forEach(d => { (groups[d.cat] = groups[d.cat] || []).push(d); });
+  let html = '';
+  const order = [['fisica','Razones físicas'],['movimiento','Por movimiento'],['tecnica','Razones técnicas']];
+  let idx = 0;
+  order.forEach(([cat,name]) => {
+    const show = currentCat === 'all' || currentCat === cat;
+    html += `<div class="cat-group ${show?'':'hidden-cat'}" data-group="${cat}">`;
+    html += `<div class="section-head"><span class="pill ${cat}">${name}</span><h3>${name==='Por movimiento'?'Artefactos por movimiento':'Artefactos por '+name.toLowerCase()}</h3></div>`;
+    groups[cat].forEach(d => {
+      html += `
+      <div class="card" data-cat="${d.cat}" data-i="${idx}">
+        <div class="card-head">
+          <div class="badge">${d.badge}</div>
+          <div class="card-title"><h4>${d.title}</h4><div class="sub">${d.sub}</div></div>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+            <div class="block que"><div class="label">${icons.que} Qué es</div><p>${d.que}</p></div>
+            <div class="block por"><div class="label">${icons.por} Por qué se produce</div><p>${d.por}</p></div>
+            <div class="block como"><div class="label">${icons.como} Cómo corregirlo</div><p>${d.como}</p></div>
+          </div>
+        </div>
+      </div>`;
+      idx++;
+    });
+    html += `</div>`;
+  });
+
+  html = `<div class="controls">
+    <button class="ctrl-btn" id="expandAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>Desplegar todo</button>
+    <button class="ctrl-btn" id="collapseAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/></svg>Plegar todo</button>
+  </div>` + html;
+
+  content.innerHTML = html;
+  attach();
+}
+
+function attach() {
+  document.querySelectorAll('.card-head').forEach(h => {
+    h.addEventListener('click', () => {
+      const card = h.parentElement;
+      const body = card.querySelector('.card-body');
+      const open = card.classList.toggle('open');
+      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+    });
+  });
+  document.getElementById('expandAll').onclick = () => setAll(true);
+  document.getElementById('collapseAll').onclick = () => setAll(false);
+}
+
+function setAll(open) {
+  document.querySelectorAll('.card-group:not(.hidden-cat) .card').forEach(card => {
+    const body = card.querySelector('.card-body');
+    card.classList.toggle('open', open);
+    body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+  });
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    currentCat = t.dataset.cat;
+    render();
+  });
+});
+
+// theme
+const root = document.documentElement;
+const saved = (function(){ try { return localStorage.getItem('theme'); } catch(e){ return null; } })();
+root.setAttribute('data-theme', saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  try { localStorage.setItem('theme', next); } catch(e){}
+  document.querySelectorAll('.card.open .card-body').forEach(b => b.style.maxHeight = b.scrollHeight + 'px');
+});
+
+render();
+</script>
+</body>
+</html>
